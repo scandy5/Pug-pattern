@@ -9,7 +9,8 @@ var gulp          = require('gulp'),
 	imagemin 	  = require('gulp-imagemin'),
 	clean 		  = require('gulp-clean'),
 	runSequence	  = require('run-sequence'),
-	notify        = require("gulp-notify");
+	notify        = require("gulp-notify"),
+	pug			  = require('gulp-pug');
 
 gulp.task('browser-sync', function() {
 	browserSync({
@@ -30,7 +31,7 @@ gulp.task('styles', function() {
 	.pipe(autoprefixer(['last 15 versions']))
 	.pipe(cleancss( {level: { 1: { specialComments: 0 } } })) // Opt., comment out when debugging
 	.pipe(gulp.dest('dist/css'))
-	.pipe(browserSync.stream())
+	.pipe(browserSync.reload({ stream: true }))
 });
 
 gulp.task('images', () =>
@@ -44,11 +45,12 @@ gulp.task('fonts', () =>
 		.pipe(gulp.dest('dist/fonts'))
 );
 
-gulp.task('html', () =>
-	gulp.src('app/*.html')
+gulp.task('html', () => {
+	return gulp.src('app/*.pug')
+		.pipe(pug({}))
 		.pipe(gulp.dest('dist'))
 		.pipe(browserSync.stream())
-);
+});
 
 gulp.task('clean', () => 
 	gulp.src('dist')
@@ -63,7 +65,7 @@ gulp.task('js', function() {
 	.pipe(concat('scripts.min.js'))
 	// .pipe(uglify()) // Mifify js (opt.)
 	.pipe(gulp.dest('dist/js'))
-	.pipe(browserSync.reload({ stream: true }))
+	.pipe(browserSync.stream())
 });
 
 gulp.task('build', function(callback){
@@ -75,7 +77,7 @@ gulp.task('watch', ['build', 'browser-sync'], function() {
 	gulp.watch(['libs/**/*.js', 'app/js/common.js'], ['js']);
 	gulp.watch('app/img/**/*'), ['images'];
 	gulp.watch('app/fonts/**/*'), ['fonts'];
-	gulp.watch('app/*.html', ['html']);
+	gulp.watch('app/*.pug', ['html'], browserSync.reload);
 });
 
 gulp.task('default', ['watch']);

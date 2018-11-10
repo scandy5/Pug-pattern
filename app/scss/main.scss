@@ -1,6 +1,7 @@
 @import "vars";
 @import "fonts";
 @import "libs";
+@import "button";
 
 ::placeholder {
 	color: #666;
@@ -48,6 +49,9 @@ body {
 
 b, strong {
 	font-weight: bold;
+}
+h1 {
+	font-size: 20px;
 }
 
 
